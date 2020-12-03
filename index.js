@@ -27,20 +27,15 @@ client.on('message', message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
-    if (command === 'ping') {
-        client.commands.get('ping').execute(message, args);
-    }
+    if (!client.commands.has(command)) return;
 
-    else if (command === 'args-info') {
-        client.commands.get('argsinfo').execute(message, args);
-    }
-
-    else if (command === 'temperature' || command === 'temp') {
-        client.commands.get('temp').execute(message, args);
-    }
-
-    else if(command == 'oshi') {
-        client.commands.get('oshi').execute(message, args);
+    try {
+        client.commands.get(command).execute(message, args);
+    } catch (error) {
+        console.error(error);
+        message.reply('There was an error trying to execute that command!').catch((error) => {
+            console.error(error);
+        });
     }
 });
 
