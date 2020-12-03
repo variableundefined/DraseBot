@@ -1,17 +1,15 @@
 module.exports = {
     name: 'temp',
+    args: true,
+    usage: `[c/f/celsius/fahrenheit/kelvin/k] [number]`,
+    aliases: [`temperature`],
     description: 'convert temperature',
     execute(message, args) {
-        if (!args.length) {
-            message.channel.send(`Syntax: temperature [c/f/celsius/fahrenheit/kelvin/k] [number]`);
-        }
-
         const unit = args[0];
         const temperature = parseFloat(args[1]);
 
-        // Early Returns / Safety Check
         if (Number.isNaN(temperature)) {
-            message.reply(`Second argument is not a number`);
+            message.reply(`second argument is missing or not a number.`);
             return
         }
 
