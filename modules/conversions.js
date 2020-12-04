@@ -1,24 +1,24 @@
 const convert = require('convert-units');
 
 module.exports = {
-    convertTemp: function convertTemp(unit, number){
-    unit = unit.toUpperCase();
-    const valid = ['C', 'F', 'K', 'R'];
-    if (!valid.includes(unit)) {
-        throw 'Unit is not a valid temperature! Accepted temperature units are c, f, k and r'
+    convertList: function convertList(number, from){
+        const allowed = convert().possibilities();
+
+        if(!allowed.includes(from)){
+            return "One or more of the unit is not available!"
+        }
+
+        let mayConvert = [...convert().from(from).possibilities()];
+
+        const origIndex = mayConvert.indexOf(from)
+        mayConvert.splice(origIndex, 1)
+
+        let returnString = []
+
+        returnString.push(`${number} ${from} equals:`);
+        mayConvert.forEach(element => returnString.push(`${convert(number).from(from).to(element).toLocaleString()} ${element}`)
+        );
+
+        return returnString
     }
-
-    let remainTemp = [...valid];
-    const origTempIndex = remainTemp.indexOf(unit)
-    remainTemp.splice(origTempIndex, 1)
-
-
-    let returnString = []
-
-    returnString.push(`${number} ${unit} equals:`);
-    remainTemp.forEach(element => returnString.push(`${convert(number).from(unit).to(element)} ${element}`)
-    );
-
-    return returnString
-}
 }

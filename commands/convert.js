@@ -3,13 +3,15 @@ const conversion = require('../modules/conversions.js');
 module.exports = {
     name: 'convert',
     args: true,
-    usage: `[unit-type] [number] [unit]`,
-    description: 'Convert between units. Insert the type of measurement, and then the unit',
+    usage: `[number] [unit]`,
+    cooldown: 5,
+    description: 'Convert between units. Insert the type of measurement, and then the unit. Directly utilize the ' +
+        'convert-units library. For all valid unit, check it out on: https://www.npmjs.com/package/convert-units. ' +
+        'It directly outputs a list of all valid units it can be converted to',
     execute(message, args) {
 
-        const unitType = args[0];
-        const number = args[1];
-        const unit = args[2];
+        const number = args[0];
+        const unit = args[1];
 
         let data = [];
 
@@ -18,14 +20,7 @@ module.exports = {
             return
         }
 
-        if(unitType === 'temperature'){
-            const temperature = ['c', 'k', 'f', 'r']
-            if(temperature.includes(unit)){
-                data = conversion.convertTemp(unit, number);
-                message.channel.send(data);
-            } else {
-                message.channel.send(`Unit not found!`);
-            }
+        data = conversion.convertList(number, unit);
+        message.channel.send(data);
         }
-    }
 }
