@@ -1,5 +1,10 @@
 const fs = require('fs');
 const Discord = require('discord.js');
+const Keyv = require('keyv');
+
+const keyv = new Keyv('sqlite://keybase.sqlite');
+
+keyv.on('error', err => console.error('Keyv connection error:', err));
 
 require('dotenv').config();
 
@@ -32,7 +37,11 @@ client.on('message', message => {
     const command = client.commands.get(commandName)
     || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
+    // Check emptiness
+
     if(!command) return;
+
+    // Check if guild only
 
     if (command.guildOnly && message.channel.type === `dm`){
         return message.reply('I can\'t execute that command inside DMs!').catch((error) => {
@@ -40,6 +49,21 @@ client.on('message', message => {
         });;
     }
 
+    // Check for allowed code names
+
+    if(command.allowedRoleIDs){
+        let mayExecute = false;
+        command.allowedRoleIDs.forEach(roleID => {
+            if(message.member.roles.cache.some(role => role.id === roleID)){
+            mayExecute = true;
+        }});
+            if(!mayExecute){
+                return message.reply('You do not have permission to execute that command.');
+            }
+    }
+
+
+    // Check for arguments length. No argument = usage
 
     if (command.args && !args.length) {
         let reply = `You didn't provide any arguments, ${message.author}!`;
@@ -52,6 +76,8 @@ client.on('message', message => {
             console.error(error);
         });
     }
+
+    // This block set up for cooldowns on command. Default 3s.
 
     if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection());
@@ -75,7 +101,7 @@ client.on('message', message => {
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
-
+    // Catch all for errors.
     try {
         command.execute(message, args);
     } catch (error) {

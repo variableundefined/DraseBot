@@ -1,24 +1,33 @@
+const _ = require('lodash');
+
 module.exports = {
-    name: 'role',
-    description: 'Get role info',
+    name: 'rolenumber',
+    args: true,
+    usage: '[roleName / roleID]',
+    description: 'Get number of people in a role. Case insensitive. Return first role if multiple have the same name.',
     execute(message, args) {
-        let roleNum;
-        roleNum = parseInt(args[0]);
+        let roleNumOrName;
+        let returnedRole;
+        roleNumOrName = args[0];
 
-        // This is a safety check to ensure that it is in fact, a proper number
-        // However, Discord get function function as a String, not as a parse, but the string must be formatted as a
-        // Integer, so the original args is parsed in instead.
+        // Check if it is an ID first
 
-        if(isNaN(roleNum)){
-            message.channel.send("Invalid role number");
-            return;
+        if(!isNaN(roleNumOrName)){
+            returnedRole = message.guild.roles.cache.get(roleNumOrName)
+            if(!returnedRole){
+                message.channel.send("A role with that ID does not exists in this guild. Please send the role's ID");
+                return;
+            }
         }
 
-        let returnedRole = message.guild.roles.cache.get(args[0])
-
-        if(!returnedRole){
-            message.channel.send("A role with that ID does not exists in this guild. Please send the role's ID");
-            return;
+        // If not a number, then probably string, try to find it
+        else{
+            let regExp = new RegExp(_.escapeRegExp(roleNumOrName));
+            returnedRole = message.guild.roles.cache.find(role => regExp.test(role.name));
+            if(!returnedRole){
+                message.channel.send("Input was not a roleID but no role with that name was found.");
+                return;
+            }
         }
 
         let memberSize = returnedRole.members.size;
