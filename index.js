@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const Keyv = require('keyv');
+const commandUtility = require('./modules/commandUtility');
 
 const keyv = new Keyv('sqlite://keybase.sqlite');
 
@@ -24,6 +25,7 @@ for (const file of commandFiles) {
 
 const cooldowns = new Discord.Collection();
 
+
 client.once('ready', () => {
     console.log('Ready!');
 });
@@ -31,7 +33,7 @@ client.once('ready', () => {
 client.on('message', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const args = commandUtility.splitString(message.content.slice(prefix.length).trim());
     const commandName = args.shift().toLowerCase();
 
     const command = client.commands.get(commandName)

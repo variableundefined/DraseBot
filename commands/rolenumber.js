@@ -29,7 +29,7 @@ module.exports = {
                 return;
             }
         }
-
+        
         let memberSize = returnedRole.members.size;
 
         message.channel.send(`${returnedRole.name} Number: ${memberSize}`);
