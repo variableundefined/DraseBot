@@ -3,9 +3,9 @@ const Discord = require('discord.js');
 const Keyv = require('keyv');
 const commandUtility = require('./modules/commandUtility');
 
-const keyv = new Keyv('sqlite://keybase.sqlite');
+const staffRole = new Keyv('sqlite://keybase.sqlite', {namespace: 'staffRole'});
 
-keyv.on('error', err => console.error('Keyv connection error:', err));
+staffRole.on('error', err => console.error('Keyv connection error:', err));
 
 require('dotenv').config();
 
@@ -30,7 +30,7 @@ client.once('ready', () => {
     console.log('Ready!');
 });
 
-client.on('message', message => {
+client.on('message',async message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = commandUtility.splitString(message.content.slice(prefix.length).trim());
@@ -51,7 +51,7 @@ client.on('message', message => {
         });;
     }
 
-    // Check for allowed code names
+    // Check for allowed role ID
 
     if(command.allowedRoleIDs){
         let mayExecute = false;
@@ -64,6 +64,24 @@ client.on('message', message => {
             }
     }
 
+    // Check for owner only
+    let isOwner = message.author.id === message.guild.ownerID;
+    if(command.ownerOnly){
+        if(!isOwner){
+            return message.reply('This command can only be used by the owner of the server.');
+        }
+    }
+
+    // Check for staff only
+
+    if(command.staffOnly) {
+        let staffRoleID = await staffRole.get(message.guild.id);
+        if (!staffRoleID) {
+            return message.channel.send(`This command can only be used by staff. And there's no staff role set on server.`);
+        } else if(!message.member.roles.cache.some(role => role.id === staffRoleID)){
+            return message.channel.send(`This message can only be used by staff`);
+        };
+    }
 
     // Check for arguments length. No argument = usage
 

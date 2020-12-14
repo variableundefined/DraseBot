@@ -3,6 +3,7 @@ const commandUtility = require('../modules/commandUtility.js');
 module.exports = {
     name: 'rolenumber',
     args: true,
+    guildOnly: true,
     usage: '[roleName / roleID]',
     description: 'Get number of people in a role. Case insensitive. Return first role if multiple have the same name.',
     execute(message, args) {
