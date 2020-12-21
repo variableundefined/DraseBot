@@ -11,13 +11,14 @@
   "license": "ISC",
   "dependencies": {
     "@keyv/sqlite": "^2.0.2",
+    "@prisma/client": "^2.13.1",
     "convert-units": "^2.3.4",
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",
     "keyv": "^4.0.3",
-    "lodash": "^4.17.20",
-    "sequelize": "^6.3.5",
-    "sequelize-cli": "^6.2.0"
+    "lodash": "^4.17.20"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@prisma/cli": "^2.13.1"
+  }
 }

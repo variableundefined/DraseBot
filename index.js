@@ -2,6 +2,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const Keyv = require('keyv');
 const commandUtility = require('./modules/commandUtility');
+const db = require('./modules/dbUtility');
 
 const staffRole = new Keyv('sqlite://keybase.sqlite', {namespace: 'staffRole'});
 
