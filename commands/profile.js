@@ -32,7 +32,7 @@ module.exports = {
             const user = await db.findUser(parsedID)
 
             if (!user) {
-                return message.channel.send("Unable to find a user with this ID in the database");
+                return message.channel.send("Unable to find a user with this ID in the database. Your code is updated.");
             }
             profileID = user.userID;
             np = user.np;
