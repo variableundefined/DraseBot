@@ -1,18 +1,30 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model Users {
+  id        Int         @id
+  updatedAt DateTime    @updatedAt
+  up        Float
+  np        Int
+  Character Character[]
 }
 
-model Users {
-  id        Int      @id
-  updatedAt DateTime @updatedAt
-  upgradePoints    Float
-  nitroBoost Int
+model Character {
+  id         Int    @id @default(autoincrement())
+  userID     Int?
+  name       String
+  EFund      Int    @default(0)
+  AFund      Int    @default(0)
+  UsedUP     Int    @default(0)
+  TotalUP    Int    @default(0)
+  Occupation String @default("\"None\"")
+  GSheet     String @default("\"None\"")
+  Income     Int    @default(0)
+  Users      Users? @relation(fields: [userID], references: [id])
 }
