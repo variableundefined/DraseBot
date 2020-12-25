@@ -1,28 +1,31 @@
 const db = require('../modules/dbUtility');
+const validator = require('validator');
 
 module.exports = {
     name: 'addprofilept',
     cooldown: 1,
     args: true,
-    usage: "[User ID] [np/up] [value]",
+    usage: "[UserID (Integer)] [np/up] [value]",
     description: 'Add or subtract a certain amount of up / nitro boost from a profile. Cannot be reduced beyond zero.',
     async execute(message, args) {
         const MAXIMUM_UP_VALUE = 500;
         const MAXIMUM_NP_VALUE = 30;
-        let id = parseInt(args[0]);
-        let pt = args[1];
-        let value = parseFloat(args[2]);
+        let id = args[0];
+        let pointType = args[1];
+        let value = args[2];
         let returnMessage;
 
-        if(!id){
-            return message.channel.send('ID Invalid');
+        // Safety Check
+        if(!validator.isInt(id)){
+            return message.channel.send('First argument must be an ID and an integer.');
         }
-        if(!['up', 'np'].includes(pt)){
+        if(!['up', 'np'].includes(pointType)){
             return message.channel.send('Second argument must be either up or np');
         }
-        if(isNaN(value)){
-            return message.channel.send('Value must be a number');
+        if(!validator.isNumeric(value)){
+            return message.channel.send('Third argument must be a number');
         }
+
 
         let user = await db.findUser(id);
 
@@ -30,7 +33,8 @@ module.exports = {
             return message.channel.send('User ID not found in database');
         }
 
-        if(pt === 'up'){
+        if(pointType === 'up'){
+            value = parseFloat(args[2]);
             let finalUP = value + user.up;
             if(finalUP >= 0 && finalUP <= MAXIMUM_UP_VALUE){
                 let newUser = await db.updateUser(id, 'up', value, true);
@@ -38,7 +42,8 @@ module.exports = {
             } else {
                 returnMessage = `Final UP value was below 0 or exceed ${MAXIMUM_UP_VALUE}`;
             }
-        } else if(pt === 'np'){
+        } else if(pointType === 'np'){
+            value = parseInt(args[2]);
             let finalNP = value + user.np;
             if(finalNP >= 0 && finalNP <= MAXIMUM_NP_VALUE) {
                 let newUser = await db.updateUser(id, 'np', value, true);

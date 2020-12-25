@@ -2,3 +2,5 @@
 /.idea
 commands/reload.js
 *.sqlite
+.idea/workspace.xml
+.idea/workspace.xml

@@ -5,8 +5,8 @@ const prisma = new PrismaClient()
 /**
 *  Check if a userID exist in the database. If not, register them
 *  @param {Guild} guild The guild
- * @param {number} id The id of the user
- * return {number} id The id of the user
+ * @param {string} id The id of the user
+ * return {string} id The id of the user
  * */
 
 async function findUser(id){

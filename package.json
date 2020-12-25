@@ -16,7 +16,8 @@
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",
     "keyv": "^4.0.3",
-    "lodash": "^4.17.20"
+    "lodash": "^4.17.20",
+    "validator": "^13.5.2"
   },
   "devDependencies": {
     "@prisma/cli": "^2.13.1"

@@ -1,44 +1,47 @@
 const Discord = require('discord.js');
 const db = require('../modules/dbUtility');
+const validator = require('validator');
 
 module.exports = {
     name: 'profile',
     cooldown: 5,
+    guildOnly: true,
     usage: "[User ID (Optional)]",
     description: 'If used with no argument, it give you your own profile and register one for you if you have none, ' +
         'If used with one argument (A User ID), it give you their profile, if they have one',
     async execute(message, args) {
         let np, up = "NOT FOUND";
-        let profileID = message.author.id;
+        let profileID;
         let pfp;
 
         // The user did not give any argument
         if(!args[0]){
-            let parsedID = parseInt(message.author.id);
-            let user = await db.findUser(parsedID);
+            profileID = message.author.id;
+            let user = await db.findUser(profileID);
             if(!user){
-                user = await db.createUser(parsedID);
+                user = await db.createUser(profileID);
             }
             pfp = message.author.displayAvatarURL();
             np = user.np;
             up = user.up;
         } else {
-            let parsedID = parseInt(args[0]);
-
-            if (!parsedID) {
+            if (!validator.isInt(args[0])) {
                 return message.channel.send("The first argument is not a valid user ID!");
             }
 
-            const user = await db.findUser(parsedID)
+            profileID = args[0];
+
+            const user = await db.findUser(profileID)
 
             if (!user) {
-                return message.channel.send("Unable to find a user with this ID in the database. Your code is updated.");
+                return message.channel.send("Unable to find a user with this ID in the database. Ensure they create a" +
+                    " profile by using the profile command themselves first.");
             }
             profileID = user.userID;
             np = user.np;
             up = user.up;
 
-            await message.client.users.fetch(args[0]).then(myUser => {
+            await message.client.users.fetch(profileID).then(myUser => {
                 pfp = myUser.displayAvatarURL();
             }).catch((error) => {
                 return message.channel.send("Unable to find a user with this ID");
