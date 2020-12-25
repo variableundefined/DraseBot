@@ -2,6 +2,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const Keyv = require('keyv');
 const commandUtility = require('./modules/commandUtility');
+const perm = require('./modules/permissionCheck');
 const db = require('./modules/dbUtility');
 
 const staffRole = new Keyv('sqlite://keybase.sqlite', {namespace: 'staffRole'});
@@ -52,35 +53,18 @@ client.on('message',async message => {
         });;
     }
 
-    // Check for allowed role ID
-
-    if(command.allowedRoleIDs){
-        let mayExecute = false;
-        command.allowedRoleIDs.forEach(roleID => {
-            if(message.member.roles.cache.some(role => role.id === roleID)){
-            mayExecute = true;
-        }});
-            if(!mayExecute){
-                return message.reply('You do not have permission to execute that command.');
-            }
-    }
-
     // Check for owner only
-    let isOwner = message.author.id === message.guild.ownerID;
     if(command.ownerOnly){
-        if(!isOwner){
-            return message.reply('This command can only be used by the owner of the server.');
+        if(!perm.isOwner(message)){
+            return message.channel.send('This command can only be used by the owner of the server.');
         }
     }
 
     // Check for staff only
 
     if(command.staffOnly) {
-        let staffRoleID = await staffRole.get(message.guild.id);
-        if (!staffRoleID) {
-            return message.channel.send(`This command can only be used by staff. And there's no staff role set on server.`);
-        } else if(!message.member.roles.cache.some(role => role.id === staffRoleID)){
-            return message.channel.send(`This message can only be used by staff`);
+        if(!await perm.isStaff(message)){
+            return message.channel.send(`This command can only be used by staff`);
         };
     }
 
@@ -90,7 +74,7 @@ client.on('message',async message => {
         let reply = `You didn't provide any arguments, ${message.author}!`;
 
         if (command.usage) {
-            reply += `\nUsage:\`\`\` ${prefix}${command.name} ${command.usage}\`\`\``
+            reply += `\nUsage:\`\`\`${prefix}${command.name} ${command.usage}\`\`\``
         }
 
         return message.channel.send(reply).catch((error) => {

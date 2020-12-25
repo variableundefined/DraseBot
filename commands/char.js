@@ -9,10 +9,19 @@ module.exports = {
     args: true,
     cooldown: 1,
     guildOnly: true,
-    usage: `[any number of arguments, separated by space. Enclose in quotations like "Don't Split This Argument" if needed]`,
+    usage: `[subcommand] [remaining arguments] \nAvailable Subcommands:` +
+        `\nadd [userID] [name] [EFund] [AFund] [UsedUP] [TotalUP] [Occupation] [GSheet Link] [Income]`+
+        `\nset [charID] [name/Occupation/GSheet] [value]` +
+        `\nprofile [charID]` +
+        `\nprofilef [charID]` +
+        `\naddmoney [charID] [a/e/b] [value]` +
+        `\naddincome [charID] [value]` +
+        `\naddup [charID] [value]` +
+        `\nuseup [charID] [value]` +
+        `\nlist [playerID]`,
     description: 'Get argument info',
     async execute(message, args) {
-        const validSubCommands = ['add', 'del', 'set', 'assoc', 'list', 'profile', 'claim'];
+        const validSubCommands = ['add', 'del', 'set', 'assoc', 'list', 'profile', 'profilef', 'addmoney', 'addup', 'useup', 'addincome', 'claim'];
         let subCom = args[0];
 
         if(!validator.isIn(subCom, validSubCommands)){
@@ -27,9 +36,18 @@ module.exports = {
                 return message.channel.send(`${subCom} has not been implemented yet!`);
                 break;
             case 'set':
-                return message.channel.send(`${subCom} has not been implemented yet!`);
+                return setChar(message, args);
                 break;
             case 'assoc':
+                return message.channel.send(`${subCom} has not been implemented yet!`);
+                break;
+            case 'addup':
+                return message.channel.send(`${subCom} has not been implemented yet!`);
+                break;
+            case 'addmoney':
+                return message.channel.send(`${subCom} has not been implemented yet!`);
+                break;
+            case 'addincome':
                 return message.channel.send(`${subCom} has not been implemented yet!`);
                 break;
             case 'list':
@@ -37,6 +55,9 @@ module.exports = {
                 break;
             case 'profile':
                 return profile(message, args);
+                break;
+            case 'profilef':
+                return profile(message, args, true);
                 break;
             case 'claim':
                 return message.channel.send(`${subCom} has not been implemented yet!`);
@@ -100,23 +121,38 @@ async function profile(message, args, fancy = false){
     if(validator.isInt(arg1)){
         let charID = Number(arg1);
         character = await char.findCharByID(charID);
-        console.log(character);
     } else{
         return message.channel.send(`Searching by character name is not yet implemented.`);
     }
 
+    if(!character){
+        return message.channel.send(`Sorry, there's no character in the database with the name or ID of ${arg1}`);
+    }
+
     if(!fancy){
-        return message.channel.send(JSON.stringify(character));
+        return message.channel.send(`**CharID:** ${character.id}\n**userID:** ${character.userID} \n**Name:** ${character.name}\n` +
+            `**Equipment Funds:** ${character.EFund} \n**Asset Funds:** ${character.AFund} \n**UP:** ${character.UsedUP} **|** ${character.TotalUP} \n` +
+            `**Occupation:** ${character.Occupation} \n**GSheet:** ${character.GSheet} \n**Income:** ${character.Income} **C** \n`);
     } else{
         const profile = new Discord.MessageEmbed()
             .setColor('#c0d0ff')
-            .setTitle(`${message.author.username}`)
-            .setDescription('Your roleplay profile.')
-            .setThumbnail(pfp)
+            .setTitle(`${character.name}`)
+            .setThumbnail(message.author.displayAvatarURL())
+            .setDescription(`${character.name}'s wallet & profile!`)
             .addFields(
-                {name: 'ID', value: profileID},
-                {name: 'Upgrade Point', value: up, inline: true},
-                {name: 'Nitro Boosts', value: np, inline: true},
+                {name: 'Owned by:', value: character.userID},
+                {name: 'EFund', value: character.EFund, inline: true},
+                {name: 'AFund', value: character.AFund, inline: true},
+                {name: 'UPs:', value: `${character.UsedUP} / ${character.TotalUP}`},
+                {name: 'Occupation:', value: `${character.Occupation}`, inline: true},
+                {name: 'Income:', value: `${character.Income}`, inline: true},
+                {name: 'Google Sheet:', value: `${character.GSheet}`},
             );
+        return message.channel.send(profile);
     }
+}
+
+async function setChar(message, args){
+    const validFields = ['EFund', 'AFund', 'UsedUP', 'TotalUP', 'Occupation', 'GSheet', 'Income'];
+    let field = args[1]
 }
