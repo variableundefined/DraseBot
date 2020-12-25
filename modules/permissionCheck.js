@@ -1,6 +1,7 @@
 const Keyv = require('keyv');
 
 const staffRole = new Keyv('sqlite://keybase.sqlite', {namespace: 'staffRole'});
+const approvedRole = new Keyv('sqlite://keybase.sqlite', {namespace: 'approvedRole'});
 
 module.exports ={
     isStaff,
@@ -19,7 +20,7 @@ async function isStaff(message){
 }
 
 async function isApproved(message){
-    let approvedRoleID = await staffRole.get(message.guild.id);
+    let approvedRoleID = await approvedRole.get(message.guild.id);
     if (!approvedRoleID) {
         return false;
     } else if(!message.member.roles.cache.some(role => role.id === approvedRoleID)){

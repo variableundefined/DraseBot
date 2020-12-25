@@ -68,6 +68,13 @@ client.on('message',async message => {
         };
     }
 
+    // Check for approved only
+    if(command.approvedOnly) {
+        if(!await perm.isApproved(message)){
+            return message.channel.send(`This command can only be used by approved members`);
+        };
+    }
+
     // Check for arguments length. No argument = usage
 
     if (command.args && !args.length) {

@@ -8,6 +8,7 @@ module.exports = {
     name: 'char',
     args: true,
     cooldown: 1,
+    approvedOnly: true,
     guildOnly: true,
     usage: `[subcommand] [remaining arguments] \nAvailable Subcommands:` +
         `\nadd [userID] [name] [EFund] [AFund] [UsedUP] [TotalUP] [Occupation] [GSheet Link] [Income]`+
@@ -36,7 +37,7 @@ module.exports = {
                 return message.channel.send(`${subCom} has not been implemented yet!`);
                 break;
             case 'set':
-                return setChar(message, args);
+                return setChar(message, args[1], args[2], args[3]);
                 break;
             case 'assoc':
                 return message.channel.send(`${subCom} has not been implemented yet!`);
@@ -152,7 +153,53 @@ async function profile(message, args, fancy = false){
     }
 }
 
-async function setChar(message, args){
-    const validFields = ['EFund', 'AFund', 'UsedUP', 'TotalUP', 'Occupation', 'GSheet', 'Income'];
-    let field = args[1]
+async function setChar(message, charID, field, value){
+    const validFields = ['name', 'Occupation', 'GSheet'];
+
+    if(!validator.isIn(field, validFields)){
+        return message.channel.send(`Argument ${field} invalid. Allowed arguments are ${validFields}`);
+    }
+
+    if(!validator.isInt(charID)){
+        return message.channel.send(`${charID} is not a valid ID!`);
+    }
+    charID = Number(charID);
+
+    let oldCharacter = await char.findCharByID(charID);
+
+    if(!oldCharacter){
+        return message.channel.send(`No character with this ID ${charID} found`);
+    }
+
+    message.channel.send(`Attempting to modify ${charID}'s ${field} to ${value}`);
+
+    switch(field){
+        case 'name':
+            if(!validator.isLength(value, {min:3, max:50})) return message.channel.send(`Name: **${name}**'s length is below 3 or above 50`);
+            let character = await char.updateCharField(charID, field, value);
+            if(!character){
+                return message.channel.send(`Unable to update character`);
+            } else{
+                return message.channel.send(`${oldCharacter.name}'s name has been changed to ${character.name}`);;
+            }
+            break;
+        case 'Occupation':
+            if(!validator.isLength(value, {min:3, max:30})) return message.channel.send(`Occupation: **${value}**'s length is below 3 or above 30`);
+            let character2 = await char.updateCharField(charID, field, value);
+            if(!character2){
+                return message.channel.send(`Unable to update character`);
+            } else{
+                return message.channel.send(`${oldCharacter.name}'s occupation has been changed from ${oldCharacter.Occupation} to ${character2.Occupation}`);;
+            }
+            break;
+        case 'GSheet':
+            if(!validator.isURL(value)) return message.channel.send(`GSheet: ${value} is not a valid URL!`);
+            let character3 = await char.updateCharField(charID, field, value);
+            if(!character3){
+                return message.channel.send(`Unable to update character`);
+            } else{
+                return message.channel.send(`${oldCharacter.name}'s google sheet has been changed from ${oldCharacter.GSheet} to ${character3.GSheet}`);;
+            }
+            break;
+    }
 }

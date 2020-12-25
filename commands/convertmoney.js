@@ -5,7 +5,7 @@ module.exports = {
     name: 'convertmoney',
     args: true,
     usage: `[copper / gold (if 3)] [silver(optional)] [copper(optional)]`,
-    description: 'Take either 1 or 3 arguments. If 1 argument, convert copper amount to Gold Silver Copper, if 3, convert to just' +
+    description: 'Take either 1 or 3 arguments. If 1 argument, convert copper amount to Gold Silver Copper, if 2 or 3, convert to just' +
         ' copper from gold silver copper.',
     async execute(message, args) {
 

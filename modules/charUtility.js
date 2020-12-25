@@ -54,7 +54,7 @@ async function createCharacter(userID, name, EFund, AFund, UsedUP, TotalUP, Occu
 
 async function updateCharNumber(id, target, point, isIncrement = false){
     const valid = ['EFund', 'AFund', 'UsedUP', 'TotalUP', 'Income'];
-    if(validator.isIn(target, valid)){
+    if(!validator.isIn(target, valid)){
         throw 'Invalid arguments for update type';
     }
     try {
@@ -71,8 +71,30 @@ async function updateCharNumber(id, target, point, isIncrement = false){
     }
 }
 
+async function updateCharField(id, target, value){
+    const valid = ['name', 'Occupation', 'GSheet'];
+    if(!validator.isIn(target, valid)){
+        throw 'Invalid arguments for update type';
+    }
+    console.log(`${id} + ${target} + ${value}`);
+    try {
+        let character;
+        character = await prisma.character.update({
+            where: {id: id},
+            data: {[target]: value},
+        })
+        return character;
+    }
+    catch(err){
+        console.log(err);
+        throw 'No character with this ID exists in the database.'
+    }
+}
+
 module.exports = {
     findFirstCharByName,
     createCharacter,
     findCharByID,
+    updateCharField,
+    updateCharNumber,
 }
