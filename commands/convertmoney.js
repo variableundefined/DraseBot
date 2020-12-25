@@ -21,9 +21,15 @@ module.exports = {
         })
 
         if(args.length === 1){
-            return message.channel.send(eco.copperToGSC(args[0]));
+            let copper = args[0];
+            let gsc = eco.copperToGSC(copper);
+            return message.channel.send(`${copper} copper convert to ${gsc.g} gold ${gsc.s} silver ${gsc.c} copper`);
         } else{
-            return message.channel.send(eco.GSCToCopper(args[0], args[1], args[2]));
+            let gold = args[0];
+            let silver = args[1];
+            let copper = args[2] || 0;
+            let newCopper = eco.GSCToCopper(gold, silver, copper);
+            return message.channel.send(`${gold} gold ${silver} silver ${copper} copper convert to ${newCopper} copper`);
         }
 
     }

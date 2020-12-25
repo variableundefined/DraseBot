@@ -7,6 +7,8 @@ module.exports ={
     isStaff,
     isOwner,
     isApproved,
+    isSameUser,
+    isBotOwner,
 }
 
 async function isStaff(message){
@@ -34,3 +36,10 @@ function isOwner(message){
     return isOwner;
 }
 
+function isBotOwner(id){
+    return id === '129045744542810112';
+}
+
+function isSameUser(message, id){
+    return message.author.id === id;
+}

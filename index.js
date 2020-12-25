@@ -3,7 +3,8 @@ const Discord = require('discord.js');
 const Keyv = require('keyv');
 const commandUtility = require('./modules/commandUtility');
 const perm = require('./modules/permissionCheck');
-const db = require('./modules/dbUtility');
+const ban = require('./modules/banUtility');
+const db = require('./modules/userUtility');
 
 const staffRole = new Keyv('sqlite://keybase.sqlite', {namespace: 'staffRole'});
 
@@ -40,6 +41,7 @@ client.on('message',async message => {
 
     const command = client.commands.get(commandName)
     || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
 
     // Check emptiness
 

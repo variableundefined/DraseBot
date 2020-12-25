@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
-const db = require('../modules/dbUtility');
+const db = require('../modules/userUtility');
+const eco = require('../modules/economyUtility');
+const char = require('../modules/charUtility');
 const validator = require('validator');
 
 module.exports = {
@@ -37,7 +39,7 @@ module.exports = {
                 return message.channel.send("Unable to find a user with this ID in the database. Ensure they create a" +
                     " profile by using the profile command themselves first.");
             }
-            profileID = user.userID;
+            profileID = user.id;
             np = user.np;
             up = user.up;
 
@@ -57,7 +59,37 @@ module.exports = {
                 {name: 'ID', value: profileID},
                 {name: 'Upgrade Point', value: up, inline: true},
                 {name: 'Nitro Boosts', value: np, inline: true},
+                {name: '\u200B', value: '\u200B', inline: true},
             );
+
+        const charCount = await char.userCharCount(profileID);
+        const allChars = await char.allUserChars(profileID);
+
+        let charNames = `\u200B`;
+        let charUP = `\u200B`;
+        let charMoney = `\u200B`;
+
+        if(allChars){
+            allChars.forEach((char, index) => {
+                charNames += `**(#${char.id})** ${char.name}\n`
+                charUP += `${char.UsedUP} / ${char.TotalUP}\n`
+
+                let EO = eco.copperToGSC(char.EFund);
+                let AO = eco.copperToGSC(char.AFund);
+
+                let EFundString = `${EO.g} G`
+                let AFundString = `${AO.g} G`
+
+                charMoney += `${EFundString} | ${AFundString} \n`
+            })
+        }
+
+        profile.addField('Character Limit', `${charCount} / 12`);
+        if(charCount){
+            profile.addField('Char Name & ID', `${charNames}`, true);
+            profile.addField(`UP`, `${charUP}`, true);
+            profile.addField(`Approx. Fund (E|A)`, `${charMoney}`, true);
+        }
 
         message.channel.send(profile);
     }

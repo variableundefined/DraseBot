@@ -91,10 +91,43 @@ async function updateCharField(id, target, value){
     }
 }
 
+async function allUserChars(id){
+    const chars = await prisma.character.findMany({
+        where: { userID: id},
+        orderBy: { id: 'asc' },
+    })
+    return chars;
+}
+
+async function userCharCount(id){
+    const result = await prisma.character.count({
+        where: { userID: id},
+    })
+    return result;
+}
+
+
 module.exports = {
     findFirstCharByName,
     createCharacter,
     findCharByID,
     updateCharField,
     updateCharNumber,
+    allUserChars,
+    userCharCount,
 }
+
+// async function test(){
+//     let mychars = await allUserChars('129045744542810112');
+//     mychars.forEach(c => console.log(`#${c.id}:${c.name}: A:${c.AFund} E:${c.EFund}`));
+//     console.log(await userCharCount('129045744542810112'));
+//
+//     console.log('e');
+//
+//     let mychars2 = await allUserChars('4325435435');
+//     mychars2.forEach(c => console.log(`#${c.id}:${c.name}: A:${c.AFund} E:${c.EFund}`));
+//     console.log(await userCharCount('4353434'));
+//
+// }
+//
+// test();

@@ -19,7 +19,7 @@ function copperToGSC(iCopper){
     silver = Math.floor(copper / silverValue);
     copper = copper % silverValue;
 
-    return `${iCopper} Copper convert to ${gold} Gold ${silver} Silver ${copper} Copper`;
+    return {g: gold, s: silver, c: copper};
 }
 
 function GSCToCopper(g = '0', s = '0', c = '0'){
@@ -41,7 +41,7 @@ function GSCToCopper(g = '0', s = '0', c = '0'){
 
     let newC = g * goldValue + s * silverValue + c;
 
-    return `${g} Gold ${s} Silver ${c} Copper convert to ${newC} C`;
+    return newC;
 }
 
 module.exports = {

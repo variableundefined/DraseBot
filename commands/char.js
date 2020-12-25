@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const db = require('../modules/dbUtility');
+const db = require('../modules/userUtility');
 const char = require('../modules/charUtility.js');
 const num = require('../modules/numberUtility');
 const validator = require('validator');
@@ -15,14 +15,13 @@ module.exports = {
         `\nset [charID] [name/Occupation/GSheet] [value]` +
         `\nprofile [charID]` +
         `\nprofilef [charID]` +
-        `\naddmoney [charID] [a/e/b] [value]` +
+        `\naddfund [charID] [a/e/b] [value]` +
         `\naddincome [charID] [value]` +
         `\naddup [charID] [value]` +
-        `\nuseup [charID] [value]` +
-        `\nlist [playerID]`,
+        `\nuseup [charID] [value]`,
     description: 'Get argument info',
     async execute(message, args) {
-        const validSubCommands = ['add', 'del', 'set', 'assoc', 'list', 'profile', 'profilef', 'addmoney', 'addup', 'useup', 'addincome', 'claim'];
+        const validSubCommands = ['add', 'del', 'set', 'assoc', 'profile', 'profilef', 'addfund', 'addup', 'useup', 'addincome', 'claim'];
         let subCom = args[0];
 
         if(!validator.isIn(subCom, validSubCommands)){
@@ -45,13 +44,10 @@ module.exports = {
             case 'addup':
                 return message.channel.send(`${subCom} has not been implemented yet!`);
                 break;
-            case 'addmoney':
+            case 'addFund':
                 return message.channel.send(`${subCom} has not been implemented yet!`);
                 break;
             case 'addincome':
-                return message.channel.send(`${subCom} has not been implemented yet!`);
-                break;
-            case 'list':
                 return message.channel.send(`${subCom} has not been implemented yet!`);
                 break;
             case 'profile':
@@ -75,30 +71,28 @@ async function addChar(message, args){
 
     if(!validator.isLength(name, {min:3, max:50})) return message.channel.send(`Name: **${name}**'s length is below 3 or above 50`);
 
-    if(!validator.isInt(EFund) || !validator.isInt(AFund)) return message.channel.send(`Equipment or Asset fund is not a valid integer!`);
-
-    if(EFund < 0 || EFund > Number.MAX_SAFE_INTEGER || AFund < 0 || AFund > Number.MAX_SAFE_INTEGER){
-        return message.channel.send(`Equipment or Asset fund below zero or above ${Number.MAX_SAFE_INTEGER}`);
+    if(!num.fundSafe(EFund) || !num.fundSafe(AFund)){
+        return message.channel.send(`Fund must be an integer above 0 and below ${Number.MAX_SAFE_INTEGER}`);
     }
 
-    if(num.retr_dec(UsedUP) > 1 || num.retr_dec(TotalUP) > 1){
-        return message.channel.send(`Used or Total UP have more than one decimal places!`);
+    if(!num.upSafe(UsedUP) || !num.upSafe(TotalUP)){
+        return message.channel.send(`UP must be above 0, below 500 and have no more than one decimal place.`);
     }
 
     if(!validator.isLength(Occupation, {min:3, max:30})) return message.channel.send(`Occupation: **${Occupation}**'s length is below 3 or above 30`);
 
     if(!validator.isURL(GSheet)) return message.channel.send(`GSheet: ${GSheet} is not a valid URL!`);
 
-    if(!validator.isInt(Income)) return message.channel.send(`Income: ${Income} is not a valid integer!`);
-
-    if(Income < 0 || Income > Number.MAX_SAFE_INTEGER) {
-        return message.channel.send(`Income below zero or above ${Number.MAX_SAFE_INTEGER}`);
-    }
+    if(!num.fundSafe(Income)) return message.channel.send(`Income must be an integer above 0 and below ${Number.MAX_SAFE_INTEGER}`);
 
     let user = await db.findUser(userID);
 
     if(!user){
         return message.channel.send(`UserID ${userID} was not found in the database, please create a profile for them before giving them a character.`);
+    }
+
+    if(await char.userCharCount(userID) >= 12){
+        return message.channel.send(`User has more than 12 characters. You may not add another.`);
     }
 
     let character = await char.createCharacter(userID, name, EFund, AFund, UsedUP, TotalUP, Occupation, GSheet, Income);
@@ -161,14 +155,15 @@ async function setChar(message, charID, field, value){
     }
 
     if(!validator.isInt(charID)){
-        return message.channel.send(`${charID} is not a valid ID!`);
+        return message.channel.send(`charID ${charID} must be an integer`);
     }
+
     charID = Number(charID);
 
     let oldCharacter = await char.findCharByID(charID);
 
     if(!oldCharacter){
-        return message.channel.send(`No character with this ID ${charID} found`);
+        return message.channel.send(`Unable to find character with charID ${charID}`);
     }
 
     message.channel.send(`Attempting to modify ${charID}'s ${field} to ${value}`);
@@ -202,4 +197,39 @@ async function setChar(message, charID, field, value){
             }
             break;
     }
+}
+
+async function addIncome(message, charID, value){
+    if(!validator.isInt(charID)){
+        return message.channel.send(`charID ${charID} must be an integer`);
+    }
+
+    if(!validator.isInt(value)){
+        return message.channel.send(`value must be an`)
+    }
+
+    charID = Number(charID);
+
+    let oldCharacter = await char.findCharByID(charID);
+
+    if(!oldCharacter){
+        return message.channel.send(`Unable to find character with charID ${charID}`);
+    }
+
+    let character = await char.updateCharNumber()
+
+
+    
+}
+
+async function addUP(message, charID, value){
+    
+}
+
+async function useUP(message, charID, value){
+
+}
+
+async function addFund(message, charID, field, value){
+
 }

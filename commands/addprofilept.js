@@ -1,9 +1,10 @@
-const db = require('../modules/dbUtility');
+const db = require('../modules/userUtility');
 const validator = require('validator');
 
 module.exports = {
     name: 'addprofilept',
-    cooldown: 1,
+    cooldown: 3,
+    staffOnly: true,
     args: true,
     usage: "[UserID (Integer)] [np/up] [value]",
     description: 'Add or subtract a certain amount of up / nitro boost from a profile. Cannot be reduced beyond zero.',
@@ -38,7 +39,7 @@ module.exports = {
             let finalUP = value + user.up;
             if(finalUP >= 0 && finalUP <= MAXIMUM_UP_VALUE){
                 let newUser = await db.updateUser(id, 'up', value, true);
-                returnMessage = `Upgrade Points for profile ${user.userID} has been changed from ${user.up} to ${newUser.up}`;
+                returnMessage = `Upgrade Points for profile ${user.id} has been changed from ${user.up} to ${newUser.up}`;
             } else {
                 returnMessage = `Final UP value was below 0 or exceed ${MAXIMUM_UP_VALUE}`;
             }

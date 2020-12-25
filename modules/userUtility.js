@@ -16,11 +16,7 @@ async function findUser(id){
                 id},
         })
         if(user){
-            return {
-                userID: user.id,
-                up: user.up,
-                np: user.np
-            };
+            return user;
         } else{
             return null;
         }
@@ -61,6 +57,7 @@ async function createUser(id, up = 0, nitro = 0){
     console.log(`User with ${id} created with ${up} upgrade points and ${nitro} nitro boosts`);
     return user;
 }
+
 
 module.exports = {
     findUser,
