@@ -12,6 +12,7 @@ module.exports = {
     args: true,
     usage: '[set/get] [approved/staff] [roleID (Only for set)]',
     guildOnly: true,
+    ownerOnly: true,
     description: 'Set the staff role on the server',
     async execute(message, args) {
         let command = args[0].toLowerCase();;

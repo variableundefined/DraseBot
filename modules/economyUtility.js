@@ -39,6 +39,10 @@ function GSCToCopper(g = '0', s = '0', c = '0'){
         return 'Copper is not an integer!';
     }
 
+    g = Number(g);
+    s = Number(s);
+    c = Number(c);
+
     let newC = g * goldValue + s * silverValue + c;
 
     return newC;
