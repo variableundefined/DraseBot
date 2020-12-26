@@ -1,18 +1,26 @@
 const db = require('../modules/userUtility');
 const char = require('../modules/charUtility.js');
 const num = require('../modules/numberUtility');
+const perm = require('../modules/permissionCheck');
 const validator = require('validator');
 
 module.exports = {
     name: 'charadd',
     args: true,
-    cooldown: 1,
+    cooldown: 5,
     approvedOnly: true,
     guildOnly: true,
-    staffOnly: true,
     usage: `\n [userID] [name] [EFund] [AFund] [UsedUP] [TotalUP] [Occupation] [GSheet Link] [Income]`,
     description: 'Get argument info',
     async execute(message, args) {
+        let userID = args[0];
+
+        let isStaff = await perm.isStaff(message);
+        if(!perm.isSameUser(message, userID)){
+            if(!isStaff){
+                return message.channel.send(`Only staff are allowed to add characters to someone else`);
+            }
+        }
         return addChar(message, args);
     }
 }
