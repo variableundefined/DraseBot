@@ -15,12 +15,15 @@ module.exports = {
     ownerOnly: true,
     description: 'Set the staff role on the server',
     async execute(message, args) {
-        let command = args[0].toLowerCase();;
+        let command = args[0].toLowerCase();
+        if(!args[1]){
+            return message.channel.send('2nd argument missing!');
+        }
         let role = args[1].toLowerCase();;
         let roleID = args[2];
 
         if (!validator.isIn(command, ['set', 'get'])) return message.channel.send('1st argument must be get or set');
-        if (!validator.isIn(role, ['approved', 'staff'])) return message.channel.send('1st argument must be Approved or Staff (case sensitive)');
+        if (!validator.isIn(role, ['approved', 'staff'])) return message.channel.send('1st argument must be Approved or Staff');
 
         switch(command){
             case 'get':
