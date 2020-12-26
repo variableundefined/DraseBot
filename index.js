@@ -117,10 +117,10 @@ client.on('message',async message => {
 
     // Catch all for errors.
     try {
-        command.execute(message, args);
+        await command.execute(message, args);
     } catch (error) {
         console.error(error);
-        message.reply('There was an error trying to execute that command!').catch((error) => {
+        message.channel.send('There was an error trying to execute that command!').catch((error) => {
             console.error(error);
         });
     }

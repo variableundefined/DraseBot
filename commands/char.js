@@ -15,7 +15,7 @@ module.exports = {
         `\nset [charID] [name/Occupation/GSheet] [value]` +
         `\nprofile [charID]` +
         `\nprofilef [charID]` +
-        `\naddfund [charID] [a/e/b] [value]` +
+        `\naddfund [charID] [a/e] [value]` +
         `\naddincome [charID] [value]` +
         `\naddup [charID] [value]` +
         `\nuseup [charID] [value]`,
@@ -42,13 +42,26 @@ module.exports = {
                 return message.channel.send(`${subCom} has not been implemented yet!`);
                 break;
             case 'addup':
-                return message.channel.send(`${subCom} has not been implemented yet!`);
+                return addNumber(message, args[1], args[2], 'TotalUP');
                 break;
-            case 'addFund':
-                return message.channel.send(`${subCom} has not been implemented yet!`);
+            case 'useup':
+                return addNumber(message, args[1], args[2], 'UsedUP');
+                break;
+            case 'addfund':
+                switch(args[2]){
+                    case 'a':
+                        return addNumber(message, args[1], args[3], 'AFund');
+                        break;
+                    case 'e':
+                        return addNumber(message, args[1], args[3], 'EFund');
+                        break;
+                    default:
+                        return message.channel.send(`Acceptable 2nd argument are: a, e`);
+                }
+                return
                 break;
             case 'addincome':
-                return message.channel.send(`${subCom} has not been implemented yet!`);
+                return addNumber(message, args[1], args[2], 'Income');
                 break;
             case 'profile':
                 return profile(message, args);
@@ -67,9 +80,9 @@ async function addChar(message, args){
     let userID, name, EFund, AFund, UsedUP, TotalUP, Occupation, GSheet, Income;
     [,userID, name, EFund, AFund, UsedUP, TotalUP, Occupation, GSheet, Income] = args;
 
-    if(!validator.isInt(userID)) return message.channel.send(`${userID} is not a valid ID!`);
+    if(!userID || !validator.isInt(userID)) return message.channel.send(`${userID} is not a valid ID!`);
 
-    if(!validator.isLength(name, {min:3, max:50})) return message.channel.send(`Name: **${name}**'s length is below 3 or above 50`);
+    if(!name || !validator.isLength(name, {min:3, max:50})) return message.channel.send(`Name: **${name}**'s length is below 3 or above 50`);
 
     if(!num.fundSafe(EFund) || !num.fundSafe(AFund)){
         return message.channel.send(`Fund must be an integer above 0 and below ${Number.MAX_SAFE_INTEGER}`);
@@ -79,9 +92,9 @@ async function addChar(message, args){
         return message.channel.send(`UP must be above 0, below 500 and have no more than one decimal place.`);
     }
 
-    if(!validator.isLength(Occupation, {min:3, max:30})) return message.channel.send(`Occupation: **${Occupation}**'s length is below 3 or above 30`);
+    if(!Occupation || !validator.isLength(Occupation, {min:3, max:30})) return message.channel.send(`Occupation: **${Occupation}**'s length is below 3 or above 30`);
 
-    if(!validator.isURL(GSheet)) return message.channel.send(`GSheet: ${GSheet} is not a valid URL!`);
+    if(!GSheet || !validator.isURL(GSheet)) return message.channel.send(`GSheet: ${GSheet} is not a valid URL!`);
 
     if(!num.fundSafe(Income)) return message.channel.send(`Income must be an integer above 0 and below ${Number.MAX_SAFE_INTEGER}`);
 
@@ -150,12 +163,16 @@ async function profile(message, args, fancy = false){
 async function setChar(message, charID, field, value){
     const validFields = ['name', 'Occupation', 'GSheet'];
 
-    if(!validator.isIn(field, validFields)){
+    if(!charID || !validator.isInt(charID)){
+        return message.channel.send(`charID ${charID} must be an integer`);
+    }
+
+    if(!field || !validator.isIn(field, validFields)){
         return message.channel.send(`Argument ${field} invalid. Allowed arguments are ${validFields}`);
     }
 
-    if(!validator.isInt(charID)){
-        return message.channel.send(`charID ${charID} must be an integer`);
+    if(!value){
+        return message.channel.send(`No value provided`);
     }
 
     charID = Number(charID);
@@ -199,13 +216,15 @@ async function setChar(message, charID, field, value){
     }
 }
 
-async function addIncome(message, charID, value){
-    if(!validator.isInt(charID)){
-        return message.channel.send(`charID ${charID} must be an integer`);
+async function addNumber(message, charID, value, field){
+    const validFields = ['Income', 'AFund', 'EFund', 'UsedUP', 'TotalUP'];
+
+    if(!validator.isIn(field, validFields)){
+        return message.channel.send('Field invalid');
     }
 
-    if(!validator.isInt(value)){
-        return message.channel.send(`value must be an`)
+    if(!charID || !validator.isInt(charID)){
+        return message.channel.send(`charID ${charID} must be an integer`);
     }
 
     charID = Number(charID);
@@ -216,20 +235,73 @@ async function addIncome(message, charID, value){
         return message.channel.send(`Unable to find character with charID ${charID}`);
     }
 
-    let character = await char.updateCharNumber()
+    if(validator.isIn(field, ['UsedUP', 'TotalUP'])){
+        if(!num.upSafe(value, true)){
+            return message.channel.send(`UP number does not meet constraints`);
+        }
+    } else {
+        if (!num.fundSafe(value, true)) {
+            return message.channel.send(`Fund/Income number does not meet constraints`);
+        }
+    }
 
+    value = Number(value);
 
-    
-}
-
-async function addUP(message, charID, value){
-    
-}
-
-async function useUP(message, charID, value){
-
-}
-
-async function addFund(message, charID, field, value){
-
+    switch(field){
+        case 'AFund':
+            if(!num.fundSafe(oldCharacter.AFund + value)) {
+                return message.channel.send(`New AFund invalid`);
+            }
+            let character = await char.updateCharNumber(charID, field, value, true);
+            if(character){
+                return message.channel.send(`${character.name}'s AFund has been changed from ${oldCharacter.AFund} to ${character.AFund}`);
+            } else{
+                return message.channel.send(`I was unable to update the AFund for some reason`);
+            }
+        break;
+        case 'EFund':
+            if(!num.fundSafe(oldCharacter.EFund + value)) {
+                return message.channel.send(`New EFund invalid`);
+            }
+            let char2 = await char.updateCharNumber(charID, field, value, true);
+            if(char2){
+                return message.channel.send(`${char2.name}'s EFund has been changed from ${oldCharacter.EFund} to ${char2.EFund}`);
+            } else{
+                return message.channel.send(`I was unable to update the EFund for some reason`);
+            }
+        break;
+        case 'Income':
+            if(!num.fundSafe(oldCharacter.Income + value)) {
+                return message.channel.send(`New Income invalid`);
+            }
+            let char3 = await char.updateCharNumber(charID, field, value, true);
+            if(char3){
+                return message.channel.send(`${char3.name}'s Income has been changed from ${oldCharacter.Income} to ${char3.Income}`);
+            } else{
+                return message.channel.send(`I was unable to update the EFund for some reason`);
+            }
+            break;
+        case 'UsedUP':
+            if(!num.upSafe(oldCharacter.UsedUP + value)) {
+                return message.channel.send(`New Used UP invalid`);
+            }
+            let char4 = await char.updateCharNumber(charID, field, value, true);
+            if(char4){
+                return message.channel.send(`${char4.name}'s Used UP has been changed from ${oldCharacter.UsedUP} to ${char4.UsedUP}`);
+            } else{
+                return message.channel.send(`I was unable to update the used UP for some reason`);
+            }
+            break;
+        case 'TotalUP':
+            if(!num.upSafe(oldCharacter.TotalUP + value)) {
+                return message.channel.send(`New Total UP invalid`);
+            }
+            let char5 = await char.updateCharNumber(charID, field, value, true);
+            if(char5){
+                return message.channel.send(`${char5.name}'s Total UP has been changed from ${oldCharacter.TotalUP} to ${char5.TotalUP}`);
+            } else{
+                return message.channel.send(`I was unable to update the Total UP for some reason`);
+            }
+            break;
+    }
 }

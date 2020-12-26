@@ -2,25 +2,42 @@ const validator = require('validator');
 const MAX_UP = 500;
 
 function retr_dec(num) {
+    num = num + '';
     return (num.split('.')[1] || []).length;
 }
 
-function fundSafe(num){
+function fundSafe(num, allow_negative = false){
+    if(!num && num !== 0){
+        return false;
+    }
+    num = num + '';
     if(!validator.isInt(num)){
         return false;
     }
-    if(num < 0 || num > Number.MAX_SAFE_INTEGER){
+    if(num > Number.MAX_SAFE_INTEGER){
+        return false;
+    }
+    if(!allow_negative && (num < 0)){
         return false;
     }
     return true
 }
 
-function upSafe(num){
+function upSafe(num, allow_negative = false){
+    if(!num && num !== 0){
+        return false;
+    }
     if(retr_dec(num) > 1){
         return false;
     }
 
-    if(num < 0 || num > 500){
+    num = num + '';
+
+    if(num > 500){
+        return false;
+    }
+
+    if(!allow_negative && num < 0){
         return false;
     }
     return true
