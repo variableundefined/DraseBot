@@ -48,7 +48,12 @@ function GSCToCopper(g = '0', s = '0', c = '0'){
     return newC;
 }
 
+function copperToSilver(num){
+    return num / silverValue;
+}
+
 module.exports = {
     copperToGSC,
-    GSCToCopper
+    GSCToCopper,
+    copperToSilver
 }

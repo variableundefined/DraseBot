@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const char = require('../modules/charUtility.js');
 const num = require('../modules/numberUtility');
+const eco = require('../modules/economyUtility');
 const perm = require('../modules/permissionCheck');
 const validator = require('validator');
 
@@ -99,10 +100,17 @@ async function profile(message, args, fancy = false){
         return message.channel.send(`Sorry, there's no character in the database with the name or ID of ${arg1}`);
     }
 
+    let a = eco.copperToGSC(character.AFund);
+    let e = eco.copperToGSC(character.EFund);
+
+    let aStr = `${a.g} G ${e.s} S`;
+    let eStr = `${e.g} G ${e.s} S`;
+    let inStr = `${eco.copperToSilver(character.Income)} S`
+
     if(!fancy){
         return message.channel.send(`**CharID:** ${character.id}\n**userID:** ${character.userID} \n**Name:** ${character.name}\n` +
-            `**Equipment Funds:** ${character.EFund} \n**Asset Funds:** ${character.AFund} \n**UP:** ${character.UsedUP} **|** ${character.TotalUP} \n` +
-            `**Occupation:** ${character.Occupation} \n**GSheet:** ${character.GSheet} \n**Income:** ${character.Income} **C** \n`);
+            `**Equipment Funds:** ${eStr} \n**Asset Funds:** ${aStr} \n**UP:** ${character.UsedUP} **|** ${character.TotalUP} \n` +
+            `**Occupation:** ${character.Occupation} \n**GSheet:** ${character.GSheet} \n**Income:** ${inStr}\n`);
     } else{
         const profile = new Discord.MessageEmbed()
             .setColor('#c0d0ff')
@@ -111,11 +119,11 @@ async function profile(message, args, fancy = false){
             .setDescription(`${character.name}'s wallet & profile!`)
             .addFields(
                 {name: 'Owned by:', value: character.userID},
-                {name: 'EFund', value: character.EFund, inline: true},
-                {name: 'AFund', value: character.AFund, inline: true},
+                {name: 'EFund', value: eStr, inline: true},
+                {name: 'AFund', value: aStr, inline: true},
                 {name: 'UPs:', value: `${character.UsedUP} / ${character.TotalUP}`},
                 {name: 'Occupation:', value: `${character.Occupation}`, inline: true},
-                {name: 'Income:', value: `${character.Income}`, inline: true},
+                {name: 'Income:', value: `${inStr}`, inline: true},
                 {name: 'Google Sheet:', value: `${character.GSheet}`},
             );
         return message.channel.send(profile);
