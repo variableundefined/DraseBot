@@ -26,7 +26,7 @@ module.exports = {
             if(!user){
                 user = await db.createUser(profileID);
             }
-            name = message.author.id;
+            name = message.author.username;
             pfp = message.author.displayAvatarURL();
             np = user.np;
             up = user.up;
