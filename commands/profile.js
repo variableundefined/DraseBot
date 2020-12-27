@@ -2,12 +2,14 @@ const Discord = require('discord.js');
 const db = require('../modules/userUtility');
 const eco = require('../modules/economyUtility');
 const char = require('../modules/charUtility');
+const du = require('../modules/discordUtility');
 const validator = require('validator');
 
 module.exports = {
     name: 'profile',
     cooldown: 5,
     guildOnly: true,
+    approvedOnly: true,
     usage: "[User ID (Optional)]",
     description: 'If used with no argument, it give you your own profile and register one for you if you have none, ' +
         'If used with one argument (A User ID), it give you their profile, if they have one',
@@ -15,6 +17,7 @@ module.exports = {
         let np, up = "NOT FOUND";
         let profileID;
         let pfp;
+        let name = 'User not found';
 
         // The user did not give any argument
         if(!args[0]){
@@ -23,6 +26,7 @@ module.exports = {
             if(!user){
                 user = await db.createUser(profileID);
             }
+            name = message.author.id;
             pfp = message.author.displayAvatarURL();
             np = user.np;
             up = user.up;
@@ -33,27 +37,30 @@ module.exports = {
 
             profileID = args[0];
 
-            const user = await db.findUser(profileID)
-
-            if (!user) {
-                return message.channel.send("Unable to find a user with this ID in the database. Ensure they create a" +
-                    " profile by using the profile command themselves first.");
+            let myUser = await du.retrieveUser(message, profileID);
+            if(!myUser){
+                return message.channel.send("Unable to find a user with this ID on Discord!")
             }
+
+            let user = await db.findUser(profileID)
+            if(!user){
+                message.channel.send("Unable to find user in database. Creating a profile for them.");
+                user = await db.createUser(profileID);
+            }
+
+            name = myUser.username;
             profileID = user.id;
             np = user.np;
             up = user.up;
 
-            await message.client.users.fetch(profileID).then(myUser => {
-                pfp = myUser.displayAvatarURL();
-            }).catch((error) => {
-                return message.channel.send("Unable to find a user with this ID");
-            });
+            pfp = myUser.displayAvatarURL();
+
         }
 
         const profile = new Discord.MessageEmbed()
             .setColor('#c0d0ff')
-            .setTitle(`${message.author.username}`)
-            .setDescription('Your roleplay profile.')
+            .setTitle(`${name}`)
+            .setDescription(`${name}'s profile and characters!`)
             .setThumbnail(pfp)
             .addFields(
                 {name: 'ID', value: profileID},
