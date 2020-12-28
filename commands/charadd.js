@@ -2,6 +2,7 @@ const db = require('../modules/userUtility');
 const char = require('../modules/charUtility.js');
 const num = require('../modules/numberUtility');
 const perm = require('../modules/permissionCheck');
+const dis = require('../modules/discordUtility');
 const validator = require('validator');
 
 module.exports = {
@@ -13,22 +14,27 @@ module.exports = {
     usage: `\n [userID] [name] [EFund] [AFund] [UsedUP] [TotalUP] [Occupation] [GSheet Link] [Income]`,
     description: 'Get argument info',
     async execute(message, args) {
-        let userID = args[0];
+        let target = await dis.retrieveUser(message, args[0]);
+
+        if(!target){
+            return message.channel.send("User ID / Mention invalid!");
+        }
 
         let isStaff = await perm.isStaff(message);
-        if(!perm.isSameUser(message, userID)){
+        if(!perm.isSameUser(message, target.id)){
             if(!isStaff){
                 return message.channel.send(`Only staff are allowed to add characters to someone else`);
             }
         }
-        return addChar(message, args);
+        return addChar(message, target.id, args[1], args[2],
+            args[3], args[4], args[5], args[6], args[7], args[8]);
     }
 }
 
 
-async function addChar(message, args){
-    let userID, name, EFund, AFund, UsedUP, TotalUP, Occupation, GSheet, Income;
-    [userID, name, EFund, AFund, UsedUP, TotalUP, Occupation, GSheet, Income] = args;
+async function addChar(message, userID, name, EFund, AFund, UsedUP, TotalUP, Occupation, GSheet, Income){
+    // let userID, name, EFund, AFund, UsedUP, TotalUP, Occupation, GSheet, Income;
+    // [userID, name, EFund, AFund, UsedUP, TotalUP, Occupation, GSheet, Income] = args;
 
     if(!userID || !validator.isInt(userID)) return message.channel.send(`${userID} is not a valid ID!`);
 

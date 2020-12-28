@@ -7,3 +7,4 @@ module.exports = {
         message.channel.send(`Arguments: ${args}\nArgument length:${args.length}`);
     }
 }
+

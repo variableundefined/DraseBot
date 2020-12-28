@@ -31,21 +31,17 @@ module.exports = {
             np = user.np;
             up = user.up;
         } else {
-            if (!validator.isInt(args[0])) {
-                return message.channel.send("The first argument is not a valid user ID!");
-            }
+            let usrID = args[0];
 
-            profileID = args[0];
-
-            let myUser = await du.retrieveUser(message, profileID);
+            let myUser = await du.retrieveUser(message, usrID);
             if(!myUser){
                 return message.channel.send("Unable to find a user with this ID on Discord!")
             }
 
-            let user = await db.findUser(profileID)
+            let user = await db.findUser(myUser.id)
             if(!user){
                 message.channel.send("Unable to find user in database. Creating a profile for them.");
-                user = await db.createUser(profileID);
+                user = await db.createUser(myUser.id);
             }
 
             name = myUser.username;
