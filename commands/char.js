@@ -21,7 +21,7 @@ module.exports = {
         `\nuseup [charID] [value]`,
     description: 'Get argument info',
     async execute(message, args) {
-        const validSubCommands = ['del', 'set', 'assoc', 'profile', 'profilef', 'addfund', 'addup', 'useup', 'addincome', 'claim'];
+        const validSubCommands = ['del', 'set', 'assoc', 'profile', 'profilef', 'addfund', 'addup', 'useup', '', 'addincome'];
         let subCom = args[0];
         let charID = args[1];
 
@@ -103,7 +103,7 @@ async function profile(message, args, fancy = false){
     let a = eco.copperToGSC(character.AFund);
     let e = eco.copperToGSC(character.EFund);
 
-    let aStr = `${a.g} G ${e.s} S`;
+    let aStr = `${a.g} G ${a.s} S`;
     let eStr = `${e.g} G ${e.s} S`;
     let inStr = `${eco.copperToSilver(character.Income)} S`
 
