@@ -14,14 +14,14 @@ module.exports = {
     usage: `[subcommand] [remaining arguments] \nAvailable Subcommands:` +
         `\nset [charID] [name/Occupation/GSheet] [value]` +
         `\nprofile [charID]` +
-        `\nprofilef [charID]` +
+        `\nprofilem [charID]` +
         `\naddfund [charID] [a/e] [value]` +
         `\naddincome [charID] [value]` +
         `\naddup [charID] [value]` +
         `\nuseup [charID] [value]`,
     description: 'Get argument info',
     async execute(message, args) {
-        const validSubCommands = ['del', 'set', 'assoc', 'profile', 'profilef', 'addfund', 'addup', 'useup', 'addincome'];
+        const validSubCommands = ['del', 'set', 'assoc', 'profile', 'profilem', 'addfund', 'addup', 'useup', 'addincome'];
         let subCom = args[0];
         let charStr = args[1];
 
@@ -83,10 +83,10 @@ module.exports = {
                 return addNumber(message, character, args[2], 'Income');
                 break;
             case 'profile':
-                return profile(message, character);
-                break;
-            case 'profilef':
                 return profile(message, character, true);
+                break;
+            case 'profilem':
+                return profile(message, character);
                 break;
             case 'claim':
                 return message.channel.send(`${subCom} has not been implemented yet!`);
@@ -111,7 +111,6 @@ async function profile(message, character, fancy = false){
         const profile = new Discord.MessageEmbed()
             .setColor('#c0d0ff')
             .setTitle(`${character.name}`)
-            .setThumbnail(message.author.displayAvatarURL())
             .setDescription(`${character.name}'s wallet & profile!`)
             .addFields(
                 {name: 'Owned by:', value: character.userID},
