@@ -30,6 +30,10 @@ module.exports = {
             return message.channel.send(`${subCom} is not a valid subcommand, valid subcommands are \`${validSubCommands}\``);
         }
 
+        if(!validator.isInt(charStr) && (charStr.length < 3 || charStr.length > 50)){
+            return message.channel.send(`CharID must be either a name between 3 to 50 chars in length, or an integer!`);
+        }
+
         let character = await char.resolveChar(charStr);
 
         if(!character || character.length === 0){
