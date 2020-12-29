@@ -3,6 +3,7 @@ const char = require('../modules/charUtility.js');
 const num = require('../modules/numberUtility');
 const eco = require('../modules/economyUtility');
 const perm = require('../modules/permissionCheck');
+const dis = require('../modules/discordUtility');
 const validator = require('validator');
 
 module.exports = {
@@ -103,8 +104,11 @@ async function profile(message, character, fancy = false){
     let eStr = `${e.g} G ${e.s} S`;
     let inStr = `${eco.copperToSilver(character.Income)} S`
 
+    let user = await dis.retrieveUser(message, '129045744542810112');
+    let userMention = `<@${user.id}>`;
+
     if(!fancy){
-        return message.channel.send(`**CharID:** ${character.id}\n**userID:** ${character.userID} \n**Name:** ${character.name}\n` +
+        return message.channel.send(`**CharID:** ${character.id}\n**User:** ${user.username || 'Name not found!'}\n**UserID:** ${character.userID} \n**Name:** ${character.name}\n` +
             `**Equipment Funds:** ${eStr} \n**Asset Funds:** ${aStr} \n**UP:** ${character.UsedUP} **|** ${character.TotalUP} \n` +
             `**Occupation:** ${character.Occupation} \n**GSheet:** ${character.GSheet} \n**Income:** ${inStr}\n`);
     } else{
@@ -113,7 +117,7 @@ async function profile(message, character, fancy = false){
             .setTitle(`${character.name}`)
             .setDescription(`${character.name}'s wallet & profile!`)
             .addFields(
-                {name: 'Owned by:', value: character.userID},
+                {name: 'Player:', value: `${userMention}` || character.userID},
                 {name: 'EFund', value: eStr, inline: true},
                 {name: 'AFund', value: aStr, inline: true},
                 {name: 'UPs:', value: `${character.UsedUP} / ${character.TotalUP}`},

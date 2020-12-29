@@ -149,13 +149,13 @@ module.exports = {
     disambiguateChars,
 }
 
-async function test(){
-    let matchChars = await allNameMatchChars('Test');
-    console.log(matchChars[0].name);
-    let matchChars2 = await allNameMatchChars('Sirdan');
-    console.log(matchChars2[0].name);
-
-
-}
-
-test();
+// async function test(){
+//     let matchChars = await allNameMatchChars('Test');
+//     console.log(matchChars[0].name);
+//     let matchChars2 = await allNameMatchChars('Sirdan');
+//     console.log(matchChars2[0].name);
+//
+//
+// }
+//
+// test();
