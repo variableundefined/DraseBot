@@ -99,6 +99,14 @@ async function allUserChars(id){
     return chars;
 }
 
+async function allNameMatchChars(name){
+    const chars = await prisma.character.findMany({
+        where: { name: {contains: name, mode: "insensitive"}},
+        orderBy: { id: 'asc' },
+    })
+    return chars;
+}
+
 async function userCharCount(id){
     const result = await prisma.character.count({
         where: { userID: id},
@@ -106,28 +114,48 @@ async function userCharCount(id){
     return result;
 }
 
+async function resolveChar(charName){
+    if(!charName) return false;
+    if(validator.isInt(charName)){
+        return await findCharByID(Number(charName));
+    } else{
+        return await allNameMatchChars(charName);
+    }
+}
+
+function disambiguateChars(chars){
+    let message = 'More than one character found. Available options include. (Get them by exact name or ID): '
+    for(const character of chars){
+        message += `"#${character.id}:${character.name}", `;
+    }
+    if(message.length > 1600){
+        message = `Way too many characters were found matching your name. Please narrow down the search.`
+    };
+    return message;
+}
+
 
 module.exports = {
     findFirstCharByName,
+    disambiguateChars,
     createCharacter,
     findCharByID,
     updateCharField,
     updateCharNumber,
     allUserChars,
+    allNameMatchChars,
     userCharCount,
+    resolveChar,
+    disambiguateChars,
 }
 
-// async function test(){
-//     let mychars = await allUserChars('129045744542810112');
-//     mychars.forEach(c => console.log(`#${c.id}:${c.name}: A:${c.AFund} E:${c.EFund}`));
-//     console.log(await userCharCount('129045744542810112'));
-//
-//     console.log('e');
-//
-//     let mychars2 = await allUserChars('4325435435');
-//     mychars2.forEach(c => console.log(`#${c.id}:${c.name}: A:${c.AFund} E:${c.EFund}`));
-//     console.log(await userCharCount('4353434'));
-//
-// }
-//
-// test();
+async function test(){
+    let matchChars = await allNameMatchChars('Test');
+    console.log(matchChars[0].name);
+    let matchChars2 = await allNameMatchChars('Sirdan');
+    console.log(matchChars2[0].name);
+
+
+}
+
+test();

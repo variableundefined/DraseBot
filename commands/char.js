@@ -21,18 +21,25 @@ module.exports = {
         `\nuseup [charID] [value]`,
     description: 'Get argument info',
     async execute(message, args) {
-        const validSubCommands = ['del', 'set', 'assoc', 'profile', 'profilef', 'addfund', 'addup', 'useup', '', 'addincome'];
+        const validSubCommands = ['del', 'set', 'assoc', 'profile', 'profilef', 'addfund', 'addup', 'useup', 'addincome'];
         let subCom = args[0];
-        let charID = args[1];
+        let charStr = args[1];
 
 
         if(!validator.isIn(subCom, validSubCommands)){
             return message.channel.send(`${subCom} is not a valid subcommand, valid subcommands are \`${validSubCommands}\``);
         }
 
-        let character = await char.findCharByID(Number(charID));
-        if(!character){
-            return message.channel.send(`Character with ID ${charID} not found`);
+        let character = await char.resolveChar(charStr);
+
+        if(!character || character.length === 0){
+            return message.channel.send(`Character with ID/Name ${charStr} not found`);
+        }else if(Array.isArray(character)) {
+            if (character.length > 1) {
+                return message.channel.send(char.disambiguateChars(character));
+            } else {
+                character = character[0];
+            }
         }
 
         if((message.author.id !== character.userID) && !(await perm.isStaff(message))){
@@ -44,24 +51,24 @@ module.exports = {
                 return message.channel.send(`${subCom} has not been implemented yet!`);
                 break;
             case 'set':
-                return setChar(message, charID, args[2], args[3]);
+                return setChar(message, character, args[2], args[3]);
                 break;
             case 'assoc':
                 return message.channel.send(`${subCom} has not been implemented yet!`);
                 break;
             case 'addup':
-                return addNumber(message, charID, args[2], 'TotalUP');
+                return addNumber(message, character, args[2], 'TotalUP');
                 break;
             case 'useup':
-                return addNumber(message, charID, args[2], 'UsedUP');
+                return addNumber(message, character, args[2], 'UsedUP');
                 break;
             case 'addfund':
                 switch(args[2]){
                     case 'a':
-                        return addNumber(message, charID, args[3], 'AFund');
+                        return addNumber(message, character, args[3], 'AFund');
                         break;
                     case 'e':
-                        return addNumber(message, charID, args[3], 'EFund');
+                        return addNumber(message, character, args[3], 'EFund');
                         break;
                     default:
                         return message.channel.send(`Acceptable 2nd argument are: a, e`);
@@ -69,13 +76,13 @@ module.exports = {
                 return
                 break;
             case 'addincome':
-                return addNumber(message, charID, args[2], 'Income');
+                return addNumber(message, character, args[2], 'Income');
                 break;
             case 'profile':
-                return profile(message, args);
+                return profile(message, character);
                 break;
             case 'profilef':
-                return profile(message, args, true);
+                return profile(message, character, true);
                 break;
             case 'claim':
                 return message.channel.send(`${subCom} has not been implemented yet!`);
@@ -84,22 +91,7 @@ module.exports = {
     }
 }
 
-async function profile(message, args, fancy = false){
-    let arg1 = args[1];
-    let character;
-
-    // If it is a number, attempt to look up the char immediately, if not, look it up by name
-    if(validator.isInt(arg1)){
-        let charID = Number(arg1);
-        character = await char.findCharByID(charID);
-    } else{
-        return message.channel.send(`Searching by character name is not yet implemented.`);
-    }
-
-    if(!character){
-        return message.channel.send(`Sorry, there's no character in the database with the name or ID of ${arg1}`);
-    }
-
+async function profile(message, character, fancy = false){
     let a = eco.copperToGSC(character.AFund);
     let e = eco.copperToGSC(character.EFund);
 
@@ -130,12 +122,9 @@ async function profile(message, args, fancy = false){
     }
 }
 
-async function setChar(message, charID, field, value){
+async function setChar(message, oldCharacter, field, value){
     const validFields = ['name', 'Occupation', 'GSheet'];
 
-    if(!charID || !validator.isInt(charID)){
-        return message.channel.send(`charID ${charID} must be an integer`);
-    }
 
     if(!field || !validator.isIn(field, validFields)){
         return message.channel.send(`Argument ${field} invalid. Allowed arguments are ${validFields}`);
@@ -145,13 +134,7 @@ async function setChar(message, charID, field, value){
         return message.channel.send(`No value provided`);
     }
 
-    charID = Number(charID);
-
-    let oldCharacter = await char.findCharByID(charID);
-
-    if(!oldCharacter){
-        return message.channel.send(`Unable to find character with charID ${charID}`);
-    }
+    let charID = oldCharacter.id;
 
     message.channel.send(`Attempting to modify ${charID}'s ${field} to ${value}`);
 
@@ -186,23 +169,13 @@ async function setChar(message, charID, field, value){
     }
 }
 
-async function addNumber(message, charID, value, field){
+async function addNumber(message, oldCharacter, value, field){
     const validFields = ['Income', 'AFund', 'EFund', 'UsedUP', 'TotalUP'];
+
+    let charID = oldCharacter.id;
 
     if(!validator.isIn(field, validFields)){
         return message.channel.send('Field invalid');
-    }
-
-    if(!charID || !validator.isInt(charID)){
-        return message.channel.send(`charID ${charID} must be an integer`);
-    }
-
-    charID = Number(charID);
-
-    let oldCharacter = await char.findCharByID(charID);
-
-    if(!oldCharacter){
-        return message.channel.send(`Unable to find character with charID ${charID}`);
     }
 
     if(validator.isIn(field, ['UsedUP', 'TotalUP'])){
