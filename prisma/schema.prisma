@@ -31,7 +31,6 @@ model character {
   Occupation String  @default("\"None\"")
   GSheet     String  @default("\"None\"")
   Income     Int     @default(0)
-  URL        String?
   Thumbnail  String?
   Users      Users?  @relation(fields: [userID], references: [id])
 }
