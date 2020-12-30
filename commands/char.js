@@ -13,7 +13,7 @@ module.exports = {
     approvedOnly: true,
     guildOnly: true,
     usage: `[subcommand] [remaining arguments] \nAvailable Subcommands:` +
-        `\nset [charID] [name/Occupation/GSheet] [value]` +
+        `\nset [charID] [name/Occupation/GSheet/Thumbnail] [value]` +
         `\nprofile [charID]` +
         `\nprofilem [charID]` +
         `\naddfund [charID] [a/e] [value]` +
@@ -31,7 +31,7 @@ module.exports = {
             return message.channel.send(`${subCom} is not a valid subcommand, valid subcommands are \`${validSubCommands}\``);
         }
 
-        if(!validator.isInt(charStr) && (charStr.length < 3 || charStr.length > 50)){
+        if(!charStr || (!validator.isInt(charStr) && (charStr.length < 3 || charStr.length > 50))){
             return message.channel.send(`CharID must be either a name between 3 to 50 chars in length, or an integer!`);
         }
 
@@ -125,12 +125,15 @@ async function profile(message, character, fancy = false){
                 {name: 'Income:', value: `${inStr}`, inline: true},
                 {name: 'Google Sheet:', value: `${character.GSheet}`},
             );
+        if(character.Thumbnail){
+            profile.setThumbnail(character.Thumbnail);
+        }
         return message.channel.send(profile);
     }
 }
 
 async function setChar(message, oldCharacter, field, value){
-    const validFields = ['name', 'Occupation', 'GSheet'];
+    const validFields = ['name', 'Occupation', 'GSheet', 'Thumbnail'];
 
 
     if(!field || !validator.isIn(field, validFields)){
@@ -143,7 +146,7 @@ async function setChar(message, oldCharacter, field, value){
 
     let charID = oldCharacter.id;
 
-    message.channel.send(`Attempting to modify ${charID}'s ${field} to ${value}`);
+    message.channel.send(`Attempting to modify ${charID}'s ${field} to <${value}>`);
 
     switch(field){
         case 'name':
@@ -171,6 +174,15 @@ async function setChar(message, oldCharacter, field, value){
                 return message.channel.send(`Unable to update character`);
             } else{
                 return message.channel.send(`${oldCharacter.name}'s google sheet has been changed from ${oldCharacter.GSheet} to ${character3.GSheet}`);;
+            }
+            break;
+        case 'Thumbnail':
+            if(!validator.isURL(value)) return message.channel.send(`Thumbnail: ${value} is not a valid URL!`);
+            let character4 = await char.updateCharField(charID, field, value);
+            if(!character4){
+                return message.channel.send(`Unable to update character`);
+            } else{
+                return message.channel.send(`${oldCharacter.name}'s google sheet has been changed from \<${oldCharacter.Thumbnail}\> to ${character4.Thumbnail}`);
             }
             break;
     }

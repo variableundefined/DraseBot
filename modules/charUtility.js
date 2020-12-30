@@ -72,7 +72,7 @@ async function updateCharNumber(id, target, point, isIncrement = false){
 }
 
 async function updateCharField(id, target, value){
-    const valid = ['name', 'Occupation', 'GSheet'];
+    const valid = ['name', 'Occupation', 'GSheet', 'Thumbnail'];
     if(!validator.isIn(target, valid)){
         throw 'Invalid arguments for update type';
     }
