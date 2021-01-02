@@ -158,9 +158,9 @@ module.exports = {
     resolveChar,
     disambiguateChars,
 }
-
-async function test(){
-    await retrieveAllIncome();
-}
-
-test();
+//
+// async function test(){
+//     await retrieveAllIncome();
+// }
+//
+// test();

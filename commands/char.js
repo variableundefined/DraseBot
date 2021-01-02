@@ -104,7 +104,7 @@ async function profile(message, character, fancy = false){
     let eStr = `${e.g} G ${e.s} S`;
     let inStr = `${eco.copperToSilver(character.Income)} S`
 
-    let user = await dis.retrieveUser(message, '129045744542810112');
+    let user = await dis.retrieveUser(message, character.userID);
     let userMention = `<@${user.id}>`;
 
     if(!fancy){
