@@ -134,6 +134,16 @@ function disambiguateChars(chars){
     return message;
 }
 
+async function retrieveAllIncome(){
+    let idIncome = await prisma.character.findMany({
+        select: {Income: true, id: true, AFund: true, EFund: true},
+    })
+    for (let c of idIncome){
+        console.log(`New AFund: ${c.AFund} -> ${c.AFund + c.Income}, New EFund: ${c.EFund} -> ${c.EFund + c.Income}`)
+        
+    }
+}
+
 
 module.exports = {
     findFirstCharByName,
@@ -149,13 +159,8 @@ module.exports = {
     disambiguateChars,
 }
 
-// async function test(){
-//     let matchChars = await allNameMatchChars('Test');
-//     console.log(matchChars[0].name);
-//     let matchChars2 = await allNameMatchChars('Sirdan');
-//     console.log(matchChars2[0].name);
-//
-//
-// }
-//
-// test();
+async function test(){
+    await retrieveAllIncome();
+}
+
+test();
