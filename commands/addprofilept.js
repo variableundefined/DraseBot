@@ -27,7 +27,6 @@ module.exports = {
             return message.channel.send('Third argument must be a number');
         }
 
-
         let user = await db.findUser(id);
 
         if(!user){

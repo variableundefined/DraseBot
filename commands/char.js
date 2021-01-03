@@ -182,7 +182,7 @@ async function setChar(message, oldCharacter, field, value){
             if(!character4){
                 return message.channel.send(`Unable to update character`);
             } else{
-                return message.channel.send(`${oldCharacter.name}'s google sheet has been changed from \<${oldCharacter.Thumbnail}\> to ${character4.Thumbnail}`);
+                return message.channel.send(`${oldCharacter.name}'s thumbnail has been changed from \<${oldCharacter.Thumbnail}\> to ${character4.Thumbnail}`);
             }
             break;
     }
