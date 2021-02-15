@@ -71,7 +71,7 @@ async function addChar(message, userID, name, EFund, AFund, UsedUP, TotalUP, Occ
     if(character){
         return message.channel.send(`Character created with \n**CharID:** ${character.id}\n**userID:** ${userID} \n**Name:** ${name}\n` +
             `**Equipment Funds:** ${EFund} \n**Asset Funds:** ${AFund} \n**UP:** ${UsedUP} **|** ${TotalUP} \n` +
-            `**Occupation:** ${Occupation} \n**GSheet:** ${GSheet} \n**Income:** ${Income} **C** \n`)
+            `**Occupation:** ${Occupation} \n**GSheet:** ${GSheet} \n**Income:** ${Income} **S** \n`)
     }else{
         return message.channel.send(`Character creation failed.`);
     }
