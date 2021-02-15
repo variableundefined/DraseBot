@@ -97,12 +97,12 @@ module.exports = {
 }
 
 async function profile(message, character, fancy = false){
-    let a = eco.copperToGSC(character.AFund);
-    let e = eco.copperToGSC(character.EFund);
+    let a = eco.silverToGS(character.AFund);
+    let e = eco.silverToGS(character.EFund);
 
     let aStr = `${a.g} G ${a.s} S`;
     let eStr = `${e.g} G ${e.s} S`;
-    let inStr = `${eco.copperToSilver(character.Income)} S`
+    let inStr = `${character.Income} S`
 
     let user = await dis.retrieveUser(message, character.userID);
     let userMention = `<@${user.id}>`;
@@ -197,6 +197,8 @@ async function addNumber(message, oldCharacter, value, field){
         return message.channel.send('Field invalid');
     }
 
+    console.log(`Value: ${value}`);
+
     if(validator.isIn(field, ['UsedUP', 'TotalUP'])){
         if(!num.upSafe(value, true)){
             return message.channel.send(`UP number does not meet constraints`);
@@ -255,6 +257,7 @@ async function addNumber(message, oldCharacter, value, field){
             }
             break;
         case 'TotalUP':
+            console.log(`Debug: TotalUP: ${oldCharacter.TotalUP} Value: ${value}`)
             if(!num.upSafe(oldCharacter.TotalUP + value)) {
                 return message.channel.send(`New Total UP invalid`);
             }

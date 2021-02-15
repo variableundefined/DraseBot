@@ -77,8 +77,8 @@ module.exports = {
                 charNames += `**(#${char.id})** ${char.name}\n`
                 charUP += `${char.UsedUP} / ${char.TotalUP}\n`
 
-                let EO = eco.copperToGSC(char.EFund);
-                let AO = eco.copperToGSC(char.AFund);
+                let EO = eco.silverToGS(char.EFund);
+                let AO = eco.silverToGS(char.AFund);
 
                 let EFundString = `${EO.g} G`
                 let AFundString = `${AO.g} G`

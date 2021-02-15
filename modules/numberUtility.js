@@ -24,6 +24,7 @@ function fundSafe(num, allow_negative = false){
 }
 
 function upSafe(num, allow_negative = false){
+    console.log(`Internal Value ${num}`);
     if(!num && num !== 0){
         return false;
     }

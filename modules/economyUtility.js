@@ -22,6 +22,21 @@ function copperToGSC(iCopper){
     return {g: gold, s: silver, c: copper};
 }
 
+function silverToGS(iSilver){
+    iSilver = iSilver + '';
+    if(!validator.isInt(iSilver)){
+        return 'You can only convert an integer!';
+    }
+
+    let gold = 0;
+    let silver = iSilver;
+
+    gold = Math.floor(silver / 100);
+    silver = silver % 100;
+
+    return {g: gold, s: silver};
+}
+
 function GSCToCopper(g = '0', s = '0', c = '0'){
     g = g + '';
     s = s + '';
@@ -55,5 +70,6 @@ function copperToSilver(num){
 module.exports = {
     copperToGSC,
     GSCToCopper,
-    copperToSilver
+    copperToSilver,
+    silverToGS,
 }
