@@ -45,7 +45,7 @@ async function addChar(message, userID, name, EFund, AFund, UsedUP, TotalUP, Occ
     }
 
     if(!num.upSafe(UsedUP) || !num.upSafe(TotalUP)){
-        return message.channel.send(`UP must be above 0, below 500 and have no more than one decimal place.`);
+        return message.channel.send(`UP must be above 0, below 500 and an integer.`);
     }
 
     if(!Occupation || !validator.isLength(Occupation, {min:3, max:30})) return message.channel.send(`Occupation: **${Occupation}**'s length is below 3 or above 30`);

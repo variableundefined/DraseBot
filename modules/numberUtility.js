@@ -28,11 +28,12 @@ function upSafe(num, allow_negative = false){
     if(!num && num !== 0){
         return false;
     }
-    if(retr_dec(num) > 1){
-        return false;
-    }
 
     num = num + '';
+
+    if(!validator.isInt(num)){
+        return false;
+    }
 
     if(num > 500){
         return false;

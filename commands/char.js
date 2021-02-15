@@ -201,11 +201,11 @@ async function addNumber(message, oldCharacter, value, field){
 
     if(validator.isIn(field, ['UsedUP', 'TotalUP'])){
         if(!num.upSafe(value, true)){
-            return message.channel.send(`UP number does not meet constraints`);
+            return message.channel.send(`UP Number must be an integer between 0 to 500`);
         }
     } else {
         if (!num.fundSafe(value, true)) {
-            return message.channel.send(`Fund/Income number does not meet constraints`);
+            return message.channel.send(`Fund/Income number must be an integer.`);
         }
     }
 
