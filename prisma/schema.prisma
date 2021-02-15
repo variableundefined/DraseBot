@@ -26,11 +26,21 @@ model character {
   name       String
   EFund      Int     @default(0)
   AFund      Int     @default(0)
-  UsedUP     Float   @default(0)
-  TotalUP    Float   @default(0)
+  UsedUP     Int     @default(0)
+  TotalUP    Int     @default(0)
   Occupation String  @default("\"None\"")
   GSheet     String  @default("\"None\"")
   Income     Int     @default(0)
   Thumbnail  String?
   Users      Users?  @relation(fields: [userID], references: [id])
 }
+
+// The underlying table does not contain a valid unique identifier and can therefore currently not be handled.
+// model characterlog {
+  // id            Int     @default(autoincrement())
+  // type          String
+  // sendcharid    Int?
+  // receivecharid Int
+  // desc          String?
+  // reason        String? @default("\"No reason provided\"")
+// }
