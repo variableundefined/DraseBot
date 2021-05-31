@@ -35,6 +35,13 @@ model character {
   Users      Users?  @relation(fields: [userID], references: [id])
 }
 
+model link {
+  id       Int     @default(autoincrement())
+  name     String  @id @default("NULL")
+  link     String?
+  category String?
+}
+
 // The underlying table does not contain a valid unique identifier and can therefore currently not be handled.
 // model characterlog {
   // id            Int     @default(autoincrement())
@@ -44,10 +51,3 @@ model character {
   // desc          String?
   // reason        String? @default("\"No reason provided\"")
 // }
-
-model link {
-  id       Int     @default(autoincrement())
-  name     String  @id @default("NULL")
-  link     String?
-  category String?
-}

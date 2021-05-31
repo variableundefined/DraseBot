@@ -55,9 +55,14 @@ async function deleteLink(name){
     }
 }
 
+async function getAllLinks(){
+    return await prisma.link.findMany();
+}
+
 module.exports = {
     findLink,
     updateLink,
     createLink,
-    deleteLink
+    deleteLink,
+    getAllLinks
 }
