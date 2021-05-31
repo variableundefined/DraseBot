@@ -9,6 +9,10 @@ module.exports = {
     async execute(message, args) {
         const links = await db.getAllLinks();
 
+        if(!links){
+            return message.channel.send(`No links found in the database, chief`);
+        }
+
         const msgArray = [];
 
         for(const link of links) {
