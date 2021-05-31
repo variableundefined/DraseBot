@@ -44,3 +44,10 @@ model character {
   // desc          String?
   // reason        String? @default("\"No reason provided\"")
 // }
+
+model link {
+  id       Int     @default(autoincrement())
+  name     String  @id @default("NULL")
+  link     String?
+  category String?
+}
