@@ -209,8 +209,7 @@ async function addNumber(message, oldCharacter, value, field){
         }
     }
 
-    value = Number(value);
-
+    value = BigInt(value);
     switch(field){
         case 'AFund':
             if(!num.fundSafe(oldCharacter.AFund + value)) {

@@ -11,17 +11,17 @@
   "license": "ISC",
   "dependencies": {
     "@keyv/sqlite": "^2.0.2",
-    "@prisma/client": "^2.13.1",
+    "@prisma/client": "^2.25.0",
     "bignumber": "^1.1.0",
     "convert-units": "^2.3.4",
-    "dayjs": "^1.9.8",
-    "discord.js": "^12.3.1",
-    "dotenv": "^8.2.0",
+    "dayjs": "^1.10.5",
+    "discord.js": "^12.5.3",
+    "dotenv": "^8.6.0",
     "keyv": "^4.0.3",
-    "lodash": "^4.17.20",
-    "validator": "^13.5.2"
+    "lodash": "^4.17.21",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
-    "@prisma/cli": "^2.13.1"
+    "prisma": "^2.25.0"
   }
 }
