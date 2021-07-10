@@ -208,7 +208,6 @@ async function addNumber(message, oldCharacter, value, field){
             return message.channel.send(`Fund/Income number must be an integer.`);
         }
     }
-
     value = BigInt(value);
     switch(field){
         case 'AFund':
@@ -241,7 +240,7 @@ async function addNumber(message, oldCharacter, value, field){
             if(char3){
                 return message.channel.send(`${char3.name}'s Income has been changed from ${oldCharacter.Income} to ${char3.Income}`);
             } else{
-                return message.channel.send(`I was unable to update the EFund for some reason`);
+                return message.channel.send(`I was unable to update the income for some reason`);
             }
             break;
         case 'UsedUP':

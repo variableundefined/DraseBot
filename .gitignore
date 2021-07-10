@@ -6,3 +6,4 @@ commands/reload.js
 .idea/inspectionProfiles/Project_Default.xml
 commands/test.js
 node_modules/
+!/prisma/schema.prisma

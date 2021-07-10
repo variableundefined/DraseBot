@@ -30,7 +30,7 @@ model character {
   TotalUP    BigInt  @default(0)
   Occupation String  @default("\"None\"") @db.VarChar
   GSheet     String  @default("\"None\"") @db.VarChar
-  Income     Int     @default(0) @db.SmallInt
+  Income     BigInt  @default(0)
   Thumbnail  String? @db.VarChar
   Users      Users?  @relation(fields: [userID], references: [id])
 }
